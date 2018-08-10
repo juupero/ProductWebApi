@@ -19,8 +19,29 @@ namespace ProductWebApi.Controllers
 		{
 			_context = context;
 		}
+        [HttpGet]
+        public string AddTestData(int categoryCount, int productCount)
+        {
+            for (int i = 0; i < categoryCount; i++)
+            {
+                var newCat = new Category { Name = "Test nb" + i, Products = new List<Product>() };
+                for (int j = 0; j < productCount; j++)
+                {
+                    newCat.Products.Add(new Product { Name = "TestProduct nb " + j, Price = j * 100 });
+                }
+                _context.Categories.Add(newCat);
+                _context.SaveChanges();
+            }
+            return _context.Database.GetDbConnection().ConnectionString;
+        }
+        //[HttpGet]
+        //public string GetDbConnectionString()
+        //{
+        //	return _context.Database.GetDbConnection().ConnectionString;
+        //}
 
-		[HttpPost]
+
+        [HttpPost]
 		public async Task<ActionResult<string>> CreateDatabase([FromBody] string key)
 		{
 			if (!ModelState.IsValid)

@@ -1,0 +1,23 @@
+﻿@model System.Collections.Generic.List<MyNamespace.Product>;
+
+@{
+    ViewData["Title"] = "About";
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@ViewData["Message"]</h3>
+
+@foreach (var item in Model)
+{
+    <p>@item.Name  </p>
+}
+
+
+
+@using (Html.BeginForm())
+
+{
+    <form method="post">
+        <input type="button" name="Pain" value="+" />
+
+    </form>
+}

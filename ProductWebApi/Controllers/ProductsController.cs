@@ -22,13 +22,31 @@ namespace ProductWebApi.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetProducts()
+        public ActionResult<IEnumerable<Product>> GetProducts(int? pageNb, int? pageSize)
         {
-            return Ok(_context.Products.ToArray());
+            //tarkistetaan ja asetetaan pageNb ja pageSize sallittuihin arvoihin. Ensimmäisen sivun nro on 0.
+            if (pageNb == null || pageNb.Value < 0) pageNb = 0;
+            if (pageSize == null || pageSize.Value < 1 || pageSize.Value > 100) pageSize = 100;
+
+            // koska pageNb ja pageSize on voinut muuttua niistä, jotka client antoi, laitetaan kätettävät arvot myös headeriin
+            Response.Headers.Add("x-pageNb", pageNb.ToString());
+            Response.Headers.Add("x-pageSize", pageSize.ToString());
+
+            // tuotteiden lukumäärä laitetaan headeriin
+            Response.Headers.Add("x-productCount", _context.Products.Count().ToString());
+
+            return Ok(
+               _context.Products
+                      .OrderBy(p => p.Id)
+                      .Skip(pageNb.Value * pageSize.Value)
+                      .Take(pageSize.Value)
+                      .ToArray()
+                );
         }
 
-		// GET: api/Products/5
-		[HttpGet("{id}", Name = "GetProduct")]
+
+        // GET: api/Products/5
+        [HttpGet("{id}", Name = "GetProduct")]
 		public async Task<ActionResult<Product>> GetProduct([FromRoute] int id)
 		{
 			if (!ModelState.IsValid)
